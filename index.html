@@ -80,7 +80,7 @@
                 <h1 class="text-lg sm:text-xl font-bold tracking-tight">반포자이 부동산 보유·양도 최적화 시뮬레이터</h1>
             </div>
             <div class="text-xs sm:text-sm text-slate-300 hidden md:block">
-                기준 자산: 서초구 반포자이 84㎡ (부부 공동명의 50:50)
+                기준 자산: 서초구 반포자이 84㎡ · <span id="headerOwnershipLabel">부부 공동명의 50:50</span>
             </div>
         </div>
     </header>
@@ -115,12 +115,12 @@
                     <div class="bg-slate-800/80 border border-slate-700 p-4 rounded-xl">
                         <div class="text-xs text-slate-400">시나리오 2 (2028년 비거주 9년)</div>
                         <div class="text-lg font-bold text-rose-400 mt-1" id="sumScen2Cost">2억 0,116 만원</div>
-                        <div class="text-[11px] text-slate-400 mt-0.5">양도세 1.58억 + 종부세 4,280만</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5" id="sumScen2Detail">양도세 1.58억 + 종부세 4,280만</div>
                     </div>
                     <div class="bg-emerald-950/60 border border-emerald-500/40 p-4 rounded-xl ring-2 ring-emerald-500/50">
                         <div class="text-xs text-emerald-300 font-semibold">시나리오 4 (2028년 거주 10년) ★</div>
                         <div class="text-lg font-bold text-emerald-300 mt-1" id="sumScen4Cost">1억 6,513 만원</div>
-                        <div class="text-[11px] text-emerald-200/70 mt-0.5">양도세 1.11억 + 종부세 1,952만 + 이자 3,440만</div>
+                        <div class="text-[11px] text-emerald-200/70 mt-0.5" id="sumScen4Detail">양도세 1.11억 + 종부세 1,952만 + 이자 3,440만</div>
                     </div>
                     <div class="bg-slate-800/80 border border-slate-700 p-4 rounded-xl">
                         <div class="text-xs text-slate-400">양도세 절감액</div>
@@ -202,7 +202,7 @@
                 <!-- Control 4: Acquisition Price -->
                 <div>
                     <div class="flex justify-between text-xs font-semibold text-slate-700 mb-2">
-                        <span>취득가액 (공동명의)</span>
+                        <span id="acqPriceLabel">취득가액 (공동명의)</span>
                         <span class="text-blue-600 font-bold" id="valAcqPrice">7.8 억 원</span>
                     </div>
                     <input type="range" id="inputAcqPrice" min="5" max="15" step="0.1" value="7.8" 
@@ -213,6 +213,20 @@
                         <span>7.8억</span>
                         <span>15.0억</span>
                     </div>
+                </div>
+
+                <!-- Control 5: Ownership Mode -->
+                <div>
+                    <div class="flex justify-between text-xs font-semibold text-slate-700 mb-2">
+                        <span>소유 형태</span>
+                        <span class="text-blue-600 font-bold" id="valOwnership">부부 공동명의 50:50</span>
+                    </div>
+                    <label for="inputJointOwnership" class="flex items-center justify-between gap-3 min-h-10 bg-white border border-slate-200 rounded-lg px-3 cursor-pointer hover:border-blue-300 transition">
+                        <span class="text-xs text-slate-600">부부 공동명의 적용</span>
+                        <input type="checkbox" id="inputJointOwnership" checked oninput="updateSimulation()"
+                            class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                    </label>
+                    <p class="text-[10px] text-slate-400 mt-1">해제 시 단독명의 100%로 양도세를 산출합니다.</p>
                 </div>
             </div>
 
@@ -250,7 +264,7 @@
                     <h3 class="text-xl font-bold text-slate-900 mt-1">5대 매도 시나리오 종합 상세 비교표</h3>
                 </div>
                 <div class="text-xs text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg self-start sm:self-auto">
-                    * 부부 공동명의(50:50), 지방소득세(10%) 및 재산세 공제 포함
+                    <span id="matrixOwnershipNote">* 부부 공동명의(50:50), 지방소득세(10%) 및 재산세 공제 포함</span>
                 </div>
             </div>
 
@@ -352,16 +366,15 @@
             <!-- Tab 3 Content: Joint Ownership Paradox -->
             <div id="tabContent-jointOwnership" class="hidden space-y-4">
                 <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl text-xs sm:text-sm text-slate-700 leading-relaxed space-y-3">
-                    <h4 class="text-base font-bold text-slate-900">부부 공동명의(50:50)가 선사하는 2가지 결정적 절세 이점</h4>
+                    <h4 class="text-base font-bold text-slate-900" id="ownershipInsightHeading">부부 공동명의(50:50)가 선사하는 2가지 결정적 절세 이점</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                         <div class="bg-white p-3.5 rounded-lg border border-slate-200">
-                            <strong class="text-blue-600 block mb-1">1. 양도소득세 2029년 '10억 한도' 차단 효과</strong>
-                            2029년부터 신설되는 장기거주소득공제 연간 10억 원 한도는 <strong>'인별'</strong>로 적용됩니다. 
-                            반포자이를 36억 원에 매도하더라도 부부 1인당 과세대상 차익은 9.4억 원에 불과하여, 80% 공제액(7.52억)이 인당 한도 10억 원에 걸리지 않아 삭감 없이 전액 공제받습니다.
+                            <strong class="text-blue-600 block mb-1" id="ownershipInsightOneTitle">1. 양도소득세 2029년 '10억 한도' 차단 효과</strong>
+                            <span id="ownershipInsightOneBody">2029년부터 신설되는 장기거주소득공제 연간 10억 원 한도는 <strong>'인별'</strong>로 적용됩니다. 반포자이를 36억 원에 매도하더라도 부부 1인당 과세대상 차익은 9.4억 원에 불과하여, 80% 공제액(7.52억)이 인당 한도 10억 원에 걸리지 않아 삭감 없이 전액 공제받습니다.</span>
                         </div>
                         <div class="bg-white p-3.5 rounded-lg border border-slate-200">
-                            <strong class="text-blue-600 block mb-1">2. 과세표준 50% 분산으로 한계세율 다운</strong>
-                            단독명의 시 과세표준이 4.8억 원 이상으로 치솟아 40%~42% 높은 세율을 적용받지만, 공동명의는 인당 과세표준이 1.8억~2.4억 원대로 낮아져 <strong>38% 세율 구간</strong>에 머물게 됩니다.
+                            <strong class="text-blue-600 block mb-1" id="ownershipInsightTwoTitle">2. 과세표준 50% 분산으로 한계세율 다운</strong>
+                            <span id="ownershipInsightTwoBody">단독명의 시 과세표준이 4.8억 원 이상으로 치솟아 40%~42% 높은 세율을 적용받지만, 공동명의는 인당 과세표준이 1.8억~2.4억 원대로 낮아져 <strong>38% 세율 구간</strong>에 머물게 됩니다.</span>
                         </div>
                     </div>
                 </div>
@@ -382,8 +395,8 @@
                 <!-- Step 1: Financial Cost -->
                 <div class="bg-slate-800/80 border border-slate-700/80 p-5 rounded-xl relative">
                     <div class="text-xs text-rose-400 font-bold uppercase">[-] 투입 자금 (비용)</div>
-                    <div class="text-2xl font-extrabold text-white mt-2">3,440 만원</div>
-                    <div class="text-xs text-slate-400 mt-1">8억 원 대출 × 연 금리 4.3% (1년 이자)</div>
+                    <div class="text-2xl font-extrabold text-white mt-2" id="arbitrageInterest">3,440 만원</div>
+                    <div class="text-xs text-slate-400 mt-1" id="arbitrageInterestDetail">8억 원 대출 × 연 금리 4.3% (1년 이자)</div>
                     <p class="text-[11px] text-slate-400 mt-3 border-t border-slate-700/60 pt-2">
                         세입자 퇴거 후 실거주 유지를 위한 필수 금융 비용
                     </p>
@@ -392,8 +405,8 @@
                 <!-- Step 2: Tax Savings -->
                 <div class="bg-slate-800/80 border border-slate-700/80 p-5 rounded-xl relative">
                     <div class="text-xs text-emerald-400 font-bold uppercase">[+] 조세 절감 (수익)</div>
-                    <div class="text-2xl font-extrabold text-emerald-400 mt-2">7,043 만원</div>
-                    <div class="text-xs text-emerald-300/80 mt-1">양도세 4,715만 + 종부세 2,328만 절감</div>
+                    <div class="text-2xl font-extrabold text-emerald-400 mt-2" id="arbitrageTaxSavings">7,043 만원</div>
+                    <div class="text-xs text-emerald-300/80 mt-1" id="arbitrageTaxSavingsDetail">양도세 4,715만 + 종부세 2,328만 절감</div>
                     <p class="text-[11px] text-slate-400 mt-3 border-t border-slate-700/60 pt-2">
                         공제율 80% 확정 및 종부세 비거주 페널티 전면 방어
                     </p>
@@ -405,7 +418,7 @@
                     <div class="text-2xl font-extrabold text-amber-300 mt-2" id="arbitrageNetProfit">+3,603 만원</div>
                     <div class="text-xs text-amber-200/80 mt-1">이자를 다 내고도 남는 세후 순이익</div>
                     <p class="text-[11px] text-emerald-200/70 mt-3 border-t border-emerald-800 pt-2">
-                        <strong>수익률 104.7%:</strong> 금융 레버리지를 활용한 합법적 최적 조세 회피 전략
+                        <strong id="arbitrageReturnRate">수익률 104.7%:</strong> 금융 레버리지를 활용한 합법적 최적 조세 회피 전략
                     </p>
                 </div>
             </div>
@@ -498,11 +511,13 @@
             const acqPrice = parseFloat(document.getElementById('inputAcqPrice').value) * 100000000; // KRW
             const loanAmount = parseFloat(document.getElementById('inputLoanAmount').value) * 100000000; // KRW
             const interestRate = parseFloat(document.getElementById('inputInterestRate').value) / 100;
+            const isJointOwnership = document.getElementById('inputJointOwnership').checked;
+            const ownerCount = isJointOwnership ? 2 : 1;
 
             const totalGain = salePrice - acqPrice;
             const taxableRatio = Math.max(0, (salePrice - 1200000000) / salePrice);
             const totalTaxableGain = totalGain * taxableRatio;
-            const jointTaxableGain = totalTaxableGain / 2; // Joint ownership 50:50
+            const perOwnerTaxableGain = totalTaxableGain / ownerCount;
 
             // Scenario Parameters Configuration
             // Scenarios:
@@ -523,14 +538,14 @@
             const results = scenarios.map(scen => {
                 // Capital Gains Tax Calculation
                 const totalDeductRate = Math.min(0.80, scen.ownRate + scen.resRate);
-                let perPersonDeduction = jointTaxableGain * totalDeductRate;
-                if (perPersonDeduction > scen.cap) {
-                    perPersonDeduction = scen.cap;
+                let perOwnerDeduction = perOwnerTaxableGain * totalDeductRate;
+                if (perOwnerDeduction > scen.cap) {
+                    perOwnerDeduction = scen.cap;
                 }
 
-                const perPersonTaxableIncome = Math.max(0, jointTaxableGain - perPersonDeduction - 2500000); // 2.5M basic deduction
-                const perPersonCapitalTax = calculateIncomeTax(perPersonTaxableIncome);
-                const totalCapitalTax = perPersonCapitalTax * 2;
+                const perOwnerTaxableIncome = Math.max(0, perOwnerTaxableGain - perOwnerDeduction - 2500000); // 2.5M basic deduction per owner
+                const perOwnerCapitalTax = calculateIncomeTax(perOwnerTaxableIncome);
+                const totalCapitalTax = perOwnerCapitalTax * ownerCount;
 
                 // Cumulative Real Estate Tax Calculation
                 let cumulativePropTax = 0;
@@ -557,7 +572,9 @@
                     capitalTax: totalCapitalTax,
                     propTax: cumulativePropTax,
                     interest: totalInterest,
-                    totalCost: totalCost
+                    totalCost: totalCost,
+                    ownerCount: ownerCount,
+                    isJointOwnership: isJointOwnership
                 };
             });
 
@@ -571,11 +588,31 @@
             const intR = parseFloat(document.getElementById('inputInterestRate').value);
             const loanA = parseFloat(document.getElementById('inputLoanAmount').value);
             const acqP = parseFloat(document.getElementById('inputAcqPrice').value);
+            const isJointOwnership = document.getElementById('inputJointOwnership').checked;
+            const ownershipLabel = isJointOwnership ? '부부 공동명의 50:50' : '단독명의 100%';
 
             document.getElementById('valSalePrice').innerText = saleP.toFixed(1) + ' 억 원';
             document.getElementById('valInterestRate').innerText = intR.toFixed(1) + ' %';
             document.getElementById('valLoanAmount').innerText = loanA.toFixed(1) + ' 억 원';
             document.getElementById('valAcqPrice').innerText = acqP.toFixed(1) + ' 억 원';
+            document.getElementById('valOwnership').innerText = ownershipLabel;
+            document.getElementById('headerOwnershipLabel').innerText = ownershipLabel;
+            document.getElementById('acqPriceLabel').innerText = '취득가액 (' + (isJointOwnership ? '공동명의' : '단독명의') + ')';
+            document.getElementById('matrixOwnershipNote').innerText = '* ' + ownershipLabel + ', 지방소득세(10%) 및 재산세 공제 포함 · 종부세는 명의별 재산정 미반영';
+
+            if (isJointOwnership) {
+                document.getElementById('ownershipInsightHeading').innerText = '부부 공동명의(50:50)가 선사하는 2가지 결정적 절세 이점';
+                document.getElementById('ownershipInsightOneTitle').innerText = "1. 양도소득세 2029년 '10억 한도' 차단 효과";
+                document.getElementById('ownershipInsightOneBody').innerHTML = "2029년부터 신설되는 장기거주소득공제 연간 10억 원 한도는 <strong>'인별'</strong>로 적용됩니다. 부부는 과세대상 양도차익과 공제 한도를 각각 적용받습니다.";
+                document.getElementById('ownershipInsightTwoTitle').innerText = '2. 과세표준 50% 분산으로 한계세율 다운';
+                document.getElementById('ownershipInsightTwoBody').innerHTML = "과세표준을 부부에게 50:50으로 분산해 각자의 누진세율 구간과 <strong>인당 기본공제 250만 원</strong>을 적용합니다.";
+            } else {
+                document.getElementById('ownershipInsightHeading').innerText = '단독명의 100% 적용 시 양도소득세 구조';
+                document.getElementById('ownershipInsightOneTitle').innerText = '1. 공제 한도와 기본공제는 1인에게 1회 적용';
+                document.getElementById('ownershipInsightOneBody').innerHTML = "전체 과세대상 양도차익에 장기거주공제 한도와 <strong>기본공제 250만 원</strong>을 한 번만 적용합니다.";
+                document.getElementById('ownershipInsightTwoTitle').innerText = '2. 전체 과세표준에 누진세율 적용';
+                document.getElementById('ownershipInsightTwoBody').innerHTML = "과세표준을 분산하지 않으므로 높은 누진세율 구간이 적용될 수 있습니다. 이 시뮬레이터의 종부세 수치는 명의별 재산정 전의 시나리오 참조값입니다.";
+            }
 
             const results = runSimulationEngine();
 
@@ -591,12 +628,21 @@
 
             document.getElementById('sumScen2Cost').innerText = (Math.round(baseCost / 10000) / 10000).toFixed(2) + ' 억 원';
             document.getElementById('sumScen4Cost').innerText = (Math.round(scen4.totalCost / 10000) / 10000).toFixed(2) + ' 억 원';
+            document.getElementById('sumScen2Detail').innerText = '양도세 ' + (Math.round(results[1].capitalTax / 10000) / 10000).toFixed(2) + '억 + 종부세 ' + Math.round(results[1].propTax / 10000).toLocaleString() + '만';
+            document.getElementById('sumScen4Detail').innerText = '양도세 ' + (Math.round(scen4.capitalTax / 10000) / 10000).toFixed(2) + '억 + 종부세 ' + Math.round(scen4.propTax / 10000).toLocaleString() + '만 + 이자 ' + Math.round(scen4.interest / 10000).toLocaleString() + '만';
 
             const taxSavingsVal = results[1].capitalTax - scen4.capitalTax;
             const propTaxSavingsVal = results[1].propTax - scen4.propTax;
+            const totalTaxSavingsVal = taxSavingsVal + propTaxSavingsVal;
+            const arbitrageReturnRate = scen4.interest > 0 ? (netSavingsScen4 / scen4.interest) * 100 : 0;
 
             document.getElementById('sumTaxSaved').innerText = Math.round(taxSavingsVal / 10000).toLocaleString() + ' 만원 절감';
             document.getElementById('sumPropertyTaxSaved').innerText = Math.round(propTaxSavingsVal / 10000).toLocaleString() + ' 만원 절감';
+            document.getElementById('arbitrageInterest').innerText = Math.round(scen4.interest / 10000).toLocaleString() + ' 만원';
+            document.getElementById('arbitrageInterestDetail').innerText = loanA.toFixed(1) + '억 원 대출 × 연 금리 ' + intR.toFixed(1) + '% (1년 이자)';
+            document.getElementById('arbitrageTaxSavings').innerText = Math.round(totalTaxSavingsVal / 10000).toLocaleString() + ' 만원';
+            document.getElementById('arbitrageTaxSavingsDetail').innerText = '양도세 ' + Math.round(taxSavingsVal / 10000).toLocaleString() + '만 + 종부세 ' + Math.round(propTaxSavingsVal / 10000).toLocaleString() + '만 절감';
+            document.getElementById('arbitrageReturnRate').innerText = '수익률 ' + arbitrageReturnRate.toFixed(1) + '%:';
 
             // Update Comparison Table
             const tbody = document.getElementById('matrixTableBody');
@@ -770,6 +816,7 @@
             document.getElementById('inputInterestRate').value = 4.3;
             document.getElementById('inputLoanAmount').value = 8;
             document.getElementById('inputAcqPrice').value = 7.8;
+            document.getElementById('inputJointOwnership').checked = true;
             updateSimulation();
         }
 
