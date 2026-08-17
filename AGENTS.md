@@ -1,0 +1,105 @@
+# AGENTS.md — Codex & AI Agent Guidelines
+
+본 문서는 2026 세제개편안 기반 반포자이 보유·양도 최적화 시뮬레이터 프로젝트에서 작업을 수행하는 Codex 및 AI 에이전트를 위한 기술 사양서 및 작업 지침서입니다.
+
+## 1. 프로젝트 개요 (Project Overview)
+
+- **프로젝트명:** 반포자이 부동산 보유·양도 최적화 시뮬레이터 (Banpo Xi Tax Optimization Simulator)
+- **목적:** 2026년 부동산 세제개편안을 반영하여 서초구 반포자이 84㎡(부부 공동명의 50:50) 보유자의 매도 시점(2027~2029년), 거주 여부(9년 거주 vs 10년 완공), 대출 활용(전세반환자금 대출)에 따른 양도소득세, 종합부동산세, 대출 이자 비용을 종합 산출하고 최적의 엑시트 전략을 제시하는 단일 페이지 웹 애플리케이션(SPA)입니다.
+
+### 주요 기능
+
+- 실시간 매도가·금리·대출금·취득가 파라미터 조절 시뮬레이터 (JavaScript 엔진)
+- 시나리오별 총 소요비용 및 순 재무 차익 비교 (Chart.js 반응형 차트)
+- 2026 세제개편 핵심 과세 기전 탭 세부 해설 (양도세, 종부세, 공동명의 아비트리지)
+- 대출 이자 vs 절세액 레버리지 차익 분석 및 실천 로드맵
+
+## 2. 아키텍처 및 제약사항 (Architecture & Constraints)
+
+### 2.1 단일 파일 원칙 (Single-File Mandate)
+
+본 프로젝트는 단 하나의 HTML 파일(`banpo_xi_tax_simulator.html`)로 구동되는 완결형 단일 페이지 애플리케이션(SPA)입니다.
+
+- 별도의 `.css`, `.js`, `.json` 파일 생성 및 분리를 엄격히 금지합니다.
+- 모든 CSS(Tailwind CDN + Minimal Style), JavaScript, HTML 구조는 단일 파일 내에 포함되어야 합니다.
+
+### 2.2 기술 스택 (Tech Stack)
+
+- **UI Framework:** Tailwind CSS (CDN: <https://cdn.tailwindcss.com>)
+- **Visualization:** Chart.js (CDN: <https://cdn.jsdelivr.net/npm/chart.js>)
+- **Typography:** Pretendard / Sans-serif Google Fonts
+- **Script Engine:** Vanilla JS (ES6+)
+
+### 2.3 그래픽 및 시각화 제약 (No SVG / No Mermaid)
+
+- **SVG 그래픽 사용 금지:** SVG 벡터 파일이나 raw `<svg>` 태그를 사용하지 않으며, Unicode 문자와 Tailwind CSS UI 컴포넌트로 시각 요소를 구현합니다.
+- **Mermaid.js 사용 금지:** 플로우차트 및 프로세스 시각화는 HTML/Tailwind CSS 타임라인 카드 구조로 구현합니다.
+- **Chart.js 컨테이너 제약:** 모든 `<canvas>` 요소는 `.chart-container` 클래스가 적용된 `<div>`로 감싸져 있어야 하며, 반응형 높이(`max-height`, `maintainAspectRatio: false`)가 보장되어야 합니다.
+
+## 3. 핵심 세법 도메인 로직 (Tax Business Logic)
+
+에이전트는 코드 수정이나 세금 계산 엔진 개편 시 다음 세법 공식을 엄격히 준수해야 합니다.
+
+### 3.1 기본 자산 파라미터 기본값
+
+- **대상 자산:** 서울시 서초구 반포자이 84㎡
+- **소유 형태:** 부부 공동명의 (지분율 50:50)
+- **기본 매도가액:** 36.0억 원
+- **기본 취득가액:** 7.8억 원 (분양가 기준)
+- **기본 보유/거주 상태:** 보유 10년 이상 완료 / 거주 9년 완성 상태
+
+### 3.2 양도소득세 계산 공식
+
+- 전체 양도차익: $G = \text{매도가액} - \text{취득가액}$
+- 비과세 초과 비율 (12억 초과분): $R_{taxable} = \frac{\text{매도가액} - 12\text{억}}{\text{매도가액}}$
+- 전체 과세대상 양도차익: $G_{taxable} = G \times R_{taxable}$
+- 부부 1인당 과세대상 양도차익 (50:50): $G_{joint} = \frac{G_{taxable}}{2}$
+
+#### 장기거주소득공제 산출 (2026 개편안 반영)
+
+- **2027년 (과도기):** 보유 연 4% (최대 40%) + 거주 연 4% (9년 36%) = 76%
+- **2028년 (보유 축소, 인당 20억 한도)**
+  - 비거주(거주 9년): 보유 연 2% (20%) + 거주 연 6% (54%) = 74%
+  - 1년 추가거주(거주 10년): 보유 연 2% (20%) + 거주 연 6% (60%) = 80%
+- **2029년 이후 (보유 폐지, 인당 10억 한도)**
+  - 비거주(거주 9년): 보유 0% + 거주 연 8% (72%) = 72%
+  - 1년 추가거주(거주 10년): 보유 0% + 거주 연 8% (80%) = 80%
+
+- 1인당 산출 공제액: $D_{calculated} = G_{joint} \times \text{공제율}$ (연도별 1인당 한도 $Cap$ 초과 시 $D = Cap$ 적용)
+- 1인당 과세표준: $TaxBase = G_{joint} - D - 2,500,000\text{원}$ (기본공제)
+- 1인당 세액 계산: $Tax_{personal} = (\text{과세표준} \times \text{누진세율} - \text{누진공제액}) \times 1.1$ (지방소득세 10% 포함)
+- 부부 합산 총 양도소득세: $Tax_{total} = Tax_{personal} \times 2$
+
+### 3.3 시나리오별 총 소요비용 (Total Financial Burden)
+
+- 총 소요비용: $\text{양도소득세} + \text{누적 종합부동산세} + \text{대출 이자 비용}$
+- 대출 이자: $\text{대출금액} \times \text{연 금리} \times \text{대출 기간(년)}$
+
+## 4. 에이전트 수정 및 개발 수칙 (Developer Guidelines)
+
+### 4.1 UI/UX 디자인 가이드라인
+
+- **컬러 팔레트:** Slate (Primary Neutral), White/Slate-50 (Background), Blue/Indigo (Accent), Emerald (Success/Optimal), Rose/Amber (Warning/Highlights)
+- **언어 설정:** 모든 UI 텍스트, 차트 범례, 툴팁, 설명문은 한국어(KO)로 작성되어야 합니다.
+- **레이아웃:** 모바일, 태블릿, 데스크톱 반응형 그리드(`grid-cols-1 md:grid-cols-2 lg:grid-cols-4`)를 유지하며, Horizontal Scroll이 발생하지 않도록 조심하십시오.
+
+### 4.2 JavaScript 실행 엔진 수정 시 주의사항
+
+- `runSimulationEngine()` 함수는 슬라이더 변경(`input` 이벤트) 시 즉시 호출되며, DOM 업데이트(`updateSimulation()`)와 차트 재렌더링(`renderCharts()`)을 트리거합니다.
+- 차트 재렌더링 시 기존 Chart.js 인스턴스(`costChartInstance`, `profitChartInstance`)를 반드시 `.destroy()`한 후 재생성하여 메모리 누수 및 캔버스 겹침 현상을 방지해야 합니다.
+
+### 4.3 코드 품질 관리
+
+HTML 구조나 JS 엔진 수정 후 반드시 다음 항목을 검증하십시오.
+
+- 슬라이더 조절 시 5개 시나리오 세액 및 순이익 수치가 즉시 재계산되는가?
+- 시나리오 4(2028년 거주 10년)가 최적안으로 강조 표시되는가?
+- 부부 공동명의 과세표준 계산 시 인당 분산(50:50) 및 인당 공제 한도 로직이 정확히 작동하는가?
+
+## 5. 변경 이력 및 관리 (Change Log)
+
+### v1.0.0 (2026-08-16)
+
+- 2026 세제개편안 기반 반포자이 84㎡ 전용 최적화 시뮬레이터 구축
+- 실시간 연동 인터랙티브 슬라이더 엔진 및 Chart.js 시각화 탑재
+- 5대 시나리오 상세 비교 매트릭스 및 금융 아비트리지 차익 분석 구현
