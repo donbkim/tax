@@ -47,7 +47,7 @@
 ### SPA 계산·UI
 
 - `src/banpo_xi_tax_simulator.html`: 유일한 HTML 애플리케이션 파일입니다. Tailwind CDN, Chart.js CDN, 모든 UI/CSS/Vanilla JS 계산 엔진을 포함합니다.
-  - `runSimulationEngine()`: 5개 시나리오의 양도소득세·종부세·대출 이자·총비용을 계산합니다.
+  - `runSimulationEngine()`: 2026년 매도와 2027~2029년 종부세 과세기준일 전·후를 포함한 9개 시나리오의 양도소득세·종부세·대출 이자·총비용을 계산합니다.
   - `calculateAnnualPropertyTax()`: 명의·거주별 종부세 기본공제, 수정안의 150% 세부담 상한 및 기존 시나리오 참조세액을 적용해 연간 추정 종부세를 계산합니다.
   - `updateSimulation()`: 슬라이더 표시, 요약 카드, 비교표를 갱신하고 차트를 다시 그립니다.
   - `renderCharts()`: 기존 Chart.js 인스턴스를 `destroy()`한 뒤 비용·순이익 차트를 생성합니다.
