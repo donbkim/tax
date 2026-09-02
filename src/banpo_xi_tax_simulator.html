@@ -236,7 +236,7 @@
                 <div class="bg-slate-50/50 p-4 rounded-xl border border-slate-200/60">
                     <div class="flex items-center justify-between mb-2">
                         <h4 class="text-sm font-bold text-slate-800">시나리오별 총 소요비용 구성 (비용 분해)</h4>
-                        <span class="text-[11px] text-slate-500">단위: 만원</span>
+                        <span class="text-[11px] text-slate-500">회색 음영: 집값 연 5% 상승 · 단위: 만원</span>
                     </div>
                     <div class="chart-container">
                         <canvas id="costBreakdownChart"></canvas>
@@ -246,8 +246,8 @@
                 <!-- Chart 2: Net Financial Savings Comparison -->
                 <div class="bg-slate-50/50 p-4 rounded-xl border border-slate-200/60">
                     <div class="flex items-center justify-between mb-2">
-                        <h4 class="text-sm font-bold text-slate-800">입주 전략별 순 재무 이익 (vs 비거주 2028년 매도)</h4>
-                        <span class="text-[11px] text-slate-500">단위: 만원</span>
+                        <h4 class="text-sm font-bold text-slate-800">입주 전략별 순 재무 이익 (vs 2028년 비거주·부과 후)</h4>
+                        <span class="text-[11px] text-slate-500">회색 음영: 집값 연 5% 상승 · 단위: 만원</span>
                     </div>
                     <div class="chart-container">
                         <canvas id="netProfitChart"></canvas>
@@ -547,11 +547,6 @@
             const isJointOwnership = document.getElementById('inputJointOwnership').checked;
             const ownerCount = isJointOwnership ? 2 : 1;
 
-            const totalGain = salePrice - acqPrice;
-            const taxableRatio = Math.max(0, (salePrice - 1200000000) / salePrice);
-            const totalTaxableGain = totalGain * taxableRatio;
-            const perOwnerTaxableGain = totalTaxableGain / ownerCount;
-
             // 종부세는 매년 6월 1일 보유자에게 부과된다는 전제로, 과세기준일 전·후 매도를 분리한다.
             const annualPropertyTaxReferences = {
                 2027: {
@@ -580,8 +575,11 @@
                 { id: 9, name: '시나리오 9', shortLabel: '29년\n거주·부과 후', year: 2029, levyTiming: '6월 1일 후 매도', resYrs: 10, isRes: true, ownRate: 0.00, resRate: 0.80, cap: 1000000000, capLabel: '인당 10억', loanYrs: 2, propertyTaxYears: [{ year: 2027, type: 'resident' }, { year: 2028, type: 'resident' }, { year: 2029, type: 'resident' }] }
             ];
 
-            const results = scenarios.map(scen => {
-                // Capital Gains Tax Calculation
+            function calculateScenarioResult(scen, scenarioSalePrice) {
+                const totalGain = scenarioSalePrice - acqPrice;
+                const taxableRatio = Math.max(0, (scenarioSalePrice - 1200000000) / scenarioSalePrice);
+                const totalTaxableGain = totalGain * taxableRatio;
+                const perOwnerTaxableGain = totalTaxableGain / ownerCount;
                 const totalDeductRate = Math.min(0.80, scen.ownRate + scen.resRate);
                 const calculatedPerOwnerDeduction = perOwnerTaxableGain * totalDeductRate;
                 const perOwnerDeduction = Math.min(calculatedPerOwnerDeduction, scen.cap);
@@ -595,14 +593,12 @@
                     .map(item => calculateAnnualPropertyTax(annualPropertyTaxReferences[item.year][item.type], isJointOwnership));
                 const cumulativePropTax = annualPropertyTaxes.reduce((sum, annualTax) => sum + annualTax, 0);
 
-                // Cumulative Loan Interest
                 const totalInterest = loanAmount * interestRate * scen.loanYrs;
-
-                // Total Financial Burden
                 const totalCost = totalCapitalTax + cumulativePropTax + totalInterest;
 
                 return {
                     ...scen,
+                    salePrice: scenarioSalePrice,
                     capitalTax: totalCapitalTax,
                     propTax: cumulativePropTax,
                     interest: totalInterest,
@@ -612,6 +608,18 @@
                     deductionCapApplied: deductionCapApplied,
                     ownerCount: ownerCount,
                     isJointOwnership: isJointOwnership
+                };
+            }
+
+            const results = scenarios.map(scen => {
+                const baseResult = calculateScenarioResult(scen, salePrice);
+                const priceGrowthSalePrice = salePrice * Math.pow(1.05, scen.year - 2026);
+                const priceGrowthResult = calculateScenarioResult(scen, priceGrowthSalePrice);
+                return {
+                    ...baseResult,
+                    priceGrowthSalePrice: priceGrowthSalePrice,
+                    priceGrowthCapitalTax: priceGrowthResult.capitalTax,
+                    priceGrowthTotalCost: priceGrowthResult.totalCost
                 };
             });
 
@@ -729,8 +737,11 @@
             const interestData = results.map(r => Math.round(r.interest / 10000));
             const propTaxData = results.map(r => Math.round(r.propTax / 10000));
             const capitalTaxData = results.map(r => Math.round(r.capitalTax / 10000));
+            const priceGrowthTotalCostData = results.map(r => Math.round(r.priceGrowthTotalCost / 10000));
             
             const netProfitData = results.map(r => Math.round((baseCost - r.totalCost) / 10000));
+            const priceGrowthBaseCost = results.find(r => r.id === 6).priceGrowthTotalCost;
+            const priceGrowthNetProfitData = results.map(r => Math.round((priceGrowthBaseCost - r.priceGrowthTotalCost) / 10000));
 
             // Chart 1: Stacked Bar Chart
             const ctx1 = document.getElementById('costBreakdownChart').getContext('2d');
@@ -742,22 +753,34 @@
                     labels: labels,
                     datasets: [
                         {
+                            label: '집값 연 5% 상승 시 총 부담 (음영)',
+                            data: priceGrowthTotalCostData,
+                            backgroundColor: 'rgba(148, 163, 184, 0.28)',
+                            borderColor: 'rgba(100, 116, 139, 0.45)',
+                            borderWidth: 1,
+                            grouped: false,
+                            order: 10
+                        },
+                        {
                             label: '양도소득세',
                             data: capitalTaxData,
                             backgroundColor: '#3b82f6',
-                            stack: 'Stack 0'
+                            stack: 'Stack 0',
+                            order: 1
                         },
                         {
                             label: '누적 종합부동산세',
                             data: propTaxData,
                             backgroundColor: '#f59e0b',
-                            stack: 'Stack 0'
+                            stack: 'Stack 0',
+                            order: 1
                         },
                         {
                             label: '대출 이자 비용',
                             data: interestData,
                             backgroundColor: '#f43f5e',
-                            stack: 'Stack 0'
+                            stack: 'Stack 0',
+                            order: 1
                         }
                     ]
                 },
@@ -801,18 +824,34 @@
                 type: 'bar',
                 data: {
                     labels: labels,
-                    datasets: [{
-                        label: '상대적 순이익 (vs 2028년 비거주·부과 후)',
-                        data: netProfitData,
-                        backgroundColor: netProfitData.map((val, idx) => idx === 3 ? '#10b981' : (val >= 0 ? '#3b82f6' : '#ef4444')),
-                        borderRadius: 6
-                    }]
+                    datasets: [
+                        {
+                            label: '집값 연 5% 상승 시 상대 순이익 (음영)',
+                            data: priceGrowthNetProfitData,
+                            backgroundColor: 'rgba(148, 163, 184, 0.28)',
+                            borderColor: 'rgba(100, 116, 139, 0.45)',
+                            borderWidth: 1,
+                            grouped: false,
+                            order: 10
+                        },
+                        {
+                            label: '상대적 순이익 (매도가 고정)',
+                            data: netProfitData,
+                            backgroundColor: netProfitData.map((val, idx) => idx === 3 ? '#10b981' : (val >= 0 ? '#3b82f6' : '#ef4444')),
+                            borderRadius: 6,
+                            order: 1
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false },
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: { font: { size: 10 } }
+                        },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
