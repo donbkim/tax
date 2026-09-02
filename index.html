@@ -278,7 +278,7 @@
                             <th class="py-3 px-4 font-bold">거주 기간</th>
                             <th class="py-3 px-4 text-center font-bold">양도세 공제 한도</th>
                             <th class="py-3 px-4 text-right font-bold">누적 대출 이자</th>
-                            <th class="py-3 px-4 text-right font-bold">누적 종부세</th>
+                            <th class="py-3 px-4 text-right font-bold">해당 연도 종부세</th>
                             <th class="py-3 px-4 text-right font-bold">양도소득세</th>
                             <th class="py-3 px-4 text-right font-bold text-slate-900">총 재무 부담액</th>
                             <th class="py-3 px-4 text-center font-bold">상대적 순이익</th>
@@ -564,15 +564,15 @@
             };
 
             const scenarios = [
-                { id: 1, name: '시나리오 1', shortLabel: '26년\n비거주', year: 2026, levyTiming: '개편·부과 전 매도', resYrs: 9, isRes: false, ownRate: 0.40, resRate: 0.36, cap: Infinity, capLabel: '제한 없음', loanYrs: 0, propertyTaxYears: [] },
-                { id: 2, name: '시나리오 2', shortLabel: '27년\n부과 전', year: 2027, levyTiming: '6월 1일 전 매도', resYrs: 9, isRes: false, ownRate: 0.40, resRate: 0.36, cap: Infinity, capLabel: '제한 없음', loanYrs: 0, propertyTaxYears: [] },
-                { id: 3, name: '시나리오 3', shortLabel: '27년\n부과 후', year: 2027, levyTiming: '6월 1일 후 매도', resYrs: 9, isRes: false, ownRate: 0.40, resRate: 0.36, cap: Infinity, capLabel: '제한 없음', loanYrs: 0, propertyTaxYears: [{ year: 2027, type: 'nonResident' }] },
-                { id: 4, name: '시나리오 4', shortLabel: '28년\n거주·부과 후', year: 2028, levyTiming: '6월 1일 후 매도', resYrs: 10, isRes: true, ownRate: 0.20, resRate: 0.60, cap: 2000000000, capLabel: '인당 20억', loanYrs: 1, propertyTaxYears: [{ year: 2027, type: 'resident' }, { year: 2028, type: 'resident' }] },
-                { id: 5, name: '시나리오 5', shortLabel: '28년\n부과 전', year: 2028, levyTiming: '6월 1일 전 매도', resYrs: 9, isRes: false, ownRate: 0.20, resRate: 0.54, cap: 2000000000, capLabel: '인당 20억', loanYrs: 0, propertyTaxYears: [{ year: 2027, type: 'nonResident' }] },
-                { id: 6, name: '시나리오 6', shortLabel: '28년\n부과 후', year: 2028, levyTiming: '6월 1일 후 매도', resYrs: 9, isRes: false, ownRate: 0.20, resRate: 0.54, cap: 2000000000, capLabel: '인당 20억', loanYrs: 0, propertyTaxYears: [{ year: 2027, type: 'nonResident' }, { year: 2028, type: 'nonResident' }] },
-                { id: 7, name: '시나리오 7', shortLabel: '29년\n부과 전', year: 2029, levyTiming: '6월 1일 전 매도', resYrs: 9, isRes: false, ownRate: 0.00, resRate: 0.72, cap: 1000000000, capLabel: '인당 10억', loanYrs: 0, propertyTaxYears: [{ year: 2027, type: 'nonResident' }, { year: 2028, type: 'nonResident' }] },
-                { id: 8, name: '시나리오 8', shortLabel: '29년\n부과 후', year: 2029, levyTiming: '6월 1일 후 매도', resYrs: 9, isRes: false, ownRate: 0.00, resRate: 0.72, cap: 1000000000, capLabel: '인당 10억', loanYrs: 0, propertyTaxYears: [{ year: 2027, type: 'nonResident' }, { year: 2028, type: 'nonResident' }, { year: 2029, type: 'nonResident' }] },
-                { id: 9, name: '시나리오 9', shortLabel: '29년\n거주·부과 후', year: 2029, levyTiming: '6월 1일 후 매도', resYrs: 10, isRes: true, ownRate: 0.00, resRate: 0.80, cap: 1000000000, capLabel: '인당 10억', loanYrs: 2, propertyTaxYears: [{ year: 2027, type: 'resident' }, { year: 2028, type: 'resident' }, { year: 2029, type: 'resident' }] }
+                { id: 1, name: '시나리오 1', shortLabel: '26년\n비거주', year: 2026, levyTiming: '개편·부과 전 매도', resYrs: 9, isRes: false, ownRate: 0.40, resRate: 0.36, cap: Infinity, capLabel: '제한 없음', loanYrs: 0, propertyTaxReference: null },
+                { id: 2, name: '시나리오 2', shortLabel: '27년\n부과 전', year: 2027, levyTiming: '6월 1일 전 매도', resYrs: 9, isRes: false, ownRate: 0.40, resRate: 0.36, cap: Infinity, capLabel: '제한 없음', loanYrs: 0, propertyTaxReference: null },
+                { id: 3, name: '시나리오 3', shortLabel: '27년\n부과 후', year: 2027, levyTiming: '6월 1일 후 매도', resYrs: 9, isRes: false, ownRate: 0.40, resRate: 0.36, cap: Infinity, capLabel: '제한 없음', loanYrs: 0, propertyTaxReference: { year: 2027, type: 'nonResident' } },
+                { id: 4, name: '시나리오 4', shortLabel: '28년\n거주·부과 후', year: 2028, levyTiming: '6월 1일 후 매도', resYrs: 10, isRes: true, ownRate: 0.20, resRate: 0.60, cap: 2000000000, capLabel: '인당 20억', loanYrs: 1, propertyTaxReference: { year: 2028, type: 'resident' } },
+                { id: 5, name: '시나리오 5', shortLabel: '28년\n부과 전', year: 2028, levyTiming: '6월 1일 전 매도', resYrs: 9, isRes: false, ownRate: 0.20, resRate: 0.54, cap: 2000000000, capLabel: '인당 20억', loanYrs: 0, propertyTaxReference: null },
+                { id: 6, name: '시나리오 6', shortLabel: '28년\n부과 후', year: 2028, levyTiming: '6월 1일 후 매도', resYrs: 9, isRes: false, ownRate: 0.20, resRate: 0.54, cap: 2000000000, capLabel: '인당 20억', loanYrs: 0, propertyTaxReference: { year: 2028, type: 'nonResident' } },
+                { id: 7, name: '시나리오 7', shortLabel: '29년\n부과 전', year: 2029, levyTiming: '6월 1일 전 매도', resYrs: 9, isRes: false, ownRate: 0.00, resRate: 0.72, cap: 1000000000, capLabel: '인당 10억', loanYrs: 0, propertyTaxReference: null },
+                { id: 8, name: '시나리오 8', shortLabel: '29년\n부과 후', year: 2029, levyTiming: '6월 1일 후 매도', resYrs: 9, isRes: false, ownRate: 0.00, resRate: 0.72, cap: 1000000000, capLabel: '인당 10억', loanYrs: 0, propertyTaxReference: { year: 2029, type: 'nonResident' } },
+                { id: 9, name: '시나리오 9', shortLabel: '29년\n거주·부과 후', year: 2029, levyTiming: '6월 1일 후 매도', resYrs: 10, isRes: true, ownRate: 0.00, resRate: 0.80, cap: 1000000000, capLabel: '인당 10억', loanYrs: 2, propertyTaxReference: { year: 2029, type: 'resident' } }
             ];
 
             function calculateScenarioResult(scen, scenarioSalePrice) {
@@ -589,18 +589,19 @@
                 const perOwnerCapitalTax = calculateIncomeTax(perOwnerTaxableIncome);
                 const totalCapitalTax = perOwnerCapitalTax * ownerCount;
 
-                const annualPropertyTaxes = scen.propertyTaxYears
-                    .map(item => calculateAnnualPropertyTax(annualPropertyTaxReferences[item.year][item.type], isJointOwnership));
-                const cumulativePropTax = annualPropertyTaxes.reduce((sum, annualTax) => sum + annualTax, 0);
+                // 종부세는 매도 해당 연도의 6월 1일 이후 매도 시에만 그 연도 세액을 반영한다.
+                const annualPropTax = scen.propertyTaxReference
+                    ? calculateAnnualPropertyTax(annualPropertyTaxReferences[scen.propertyTaxReference.year][scen.propertyTaxReference.type], isJointOwnership)
+                    : 0;
 
                 const totalInterest = loanAmount * interestRate * scen.loanYrs;
-                const totalCost = totalCapitalTax + cumulativePropTax + totalInterest;
+                const totalCost = totalCapitalTax + annualPropTax + totalInterest;
 
                 return {
                     ...scen,
                     salePrice: scenarioSalePrice,
                     capitalTax: totalCapitalTax,
-                    propTax: cumulativePropTax,
+                    propTax: annualPropTax,
                     interest: totalInterest,
                     totalCost: totalCost,
                     calculatedPerOwnerDeduction: calculatedPerOwnerDeduction,
@@ -769,7 +770,7 @@
                             order: 1
                         },
                         {
-                            label: '누적 종합부동산세',
+                            label: '해당 연도 종합부동산세',
                             data: propTaxData,
                             backgroundColor: '#f59e0b',
                             stack: 'Stack 0',
