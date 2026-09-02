@@ -107,7 +107,7 @@
                 </div>
 
                 <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">
-                    2026년 세제개편으로 양도세 '보유 공제'가 축소되고 종부세 '비거주 페널티'가 신설됨에 따라, 
+                    2026년 세제개편 수정안으로 양도세 '보유 공제'는 축소되지만, 종부세 비거주 부담은 완화됨에 따라,
                     <strong>연 3,440만 원의 대출 이자(8억 원, 금리 4.3% 기준)를 부담하더라도 1년을 추가 거주(총 10년 완성)하고 2028년에 매도하는 것이 총 소요비용을 가장 크게 줄이는 독보적 최적안</strong>입니다.
                 </p>
 
@@ -130,7 +130,7 @@
                     <div class="bg-slate-800/80 border border-slate-700 p-4 rounded-xl">
                         <div class="text-xs text-slate-400">종부세 절감액</div>
                         <div class="text-lg font-bold text-sky-400 mt-1" id="sumPropertyTaxSaved">2,328 만원 절감</div>
-                        <div class="text-[11px] text-slate-400 mt-0.5">비거주 페널티 방어</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">거주 공제·공정시장가액비율 차이</div>
                     </div>
                 </div>
             </div>
@@ -303,7 +303,7 @@
                     1. 양도소득세: 장기거주 중심 개편
                 </button>
                 <button onclick="switchTab('comprehensiveTax')" id="tabBtn-comprehensiveTax" class="tab-btn pb-3 text-sm font-semibold text-slate-500 transition">
-                    2. 종합부동산세: 비거주 징벌적 과세
+                    2. 종합부동산세: 비거주 부담 조정
                 </button>
                 <button onclick="switchTab('jointOwnership')" id="tabBtn-jointOwnership" class="tab-btn pb-3 text-sm font-semibold text-slate-500 transition">
                     3. 부부 공동명의 아비트리지 역설
@@ -351,13 +351,14 @@
                     </div>
                     <div class="bg-rose-50 border border-rose-200 p-4 rounded-xl">
                         <h4 class="text-sm font-bold text-rose-900 flex items-center gap-2">
-                            <span>🚫 비거주 1주택자 (세입자 보유)</span>
-                            <span class="text-xs bg-rose-200 text-rose-800 px-2 py-0.5 rounded">징벌적 과세</span>
+                            <span>🏘️ 비거주 1주택자 (세입자 보유)</span>
+                            <span class="text-xs bg-amber-200 text-amber-800 px-2 py-0.5 rounded">부담 완화</span>
                         </h4>
                         <ul class="text-xs text-rose-800 mt-2 space-y-1.5 list-disc list-inside">
-                            <li>1세대 1주택 단독명의: 공시가 <strong>9억 원</strong>으로 기본공제 축소</li>
-                            <li>부부 공동명의 개별납부: 비거주 시 인당 4억 원 (합산 <strong>8억 원</strong>으로 반토막)</li>
-                            <li>공정시장가액비율: 2028년부터 80% 적용하여 매년 2,350만 원 종부세 부과</li>
+                            <li>1세대 1주택 단독명의: 기본공제 <strong>12억 원</strong> 현행 유지</li>
+                            <li>부부 공동명의 개별납부: 비거주 시 인당 <strong>6억 원</strong> (합산 <strong>12억 원</strong>)</li>
+                            <li>세부담 상한: 직전연도 대비 <strong>150%</strong> 현행 유지 (200% 인상안 철회)</li>
+                            <li>공정시장가액비율: 2028년부터 80% 적용</li>
                         </ul>
                     </div>
                 </div>
@@ -408,7 +409,7 @@
                     <div class="text-2xl font-extrabold text-emerald-400 mt-2" id="arbitrageTaxSavings">7,043 만원</div>
                     <div class="text-xs text-emerald-300/80 mt-1" id="arbitrageTaxSavingsDetail">양도세 4,715만 + 종부세 2,328만 절감</div>
                     <p class="text-[11px] text-slate-400 mt-3 border-t border-slate-700/60 pt-2">
-                        공제율 80% 확정 및 종부세 비거주 페널티 전면 방어
+                        공제율 80% 확정 및 실거주 공제 효과 반영
                     </p>
                 </div>
 
@@ -468,7 +469,7 @@
     <!-- Footer -->
     <footer class="bg-slate-900 text-slate-400 text-xs py-6 mt-12 border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
-            <p>본 시뮬레이터는 2026 세제개편안 원안 규정(장기거주소득공제 이행, 종부세 거주 이원화 등)을 기반으로 산출된 연구용 예측 수치입니다.</p>
+            <p>본 시뮬레이터는 2026 세제개편 수정안(장기거주소득공제 이행, 종부세 비거주 공제 완화 및 세부담 상한 150% 유지)을 기반으로 산출된 연구용 예측 수치입니다.</p>
             <p>실제 세액은 구체적 개정 법률 최종 통과안, 재산세 공제 비율, 매매 계약 시점에 따라 미세한 차이가 발생할 수 있으므로 전문 세무사와의 개별 검증을 권장합니다.</p>
         </div>
     </footer>
@@ -505,6 +506,33 @@
             return Math.max(0, tax * 1.1); // Including 10% local income tax
         }
 
+        // 종부세는 기존 시나리오 참조세액을 기준으로 공제 변경분을 비례 반영한다.
+        // 공시가격(25억 원)·기존 재산세 공제 등 세부 전제는 고정하고, 명의·거주별
+        // 기본공제와 수정안의 직전연도 대비 150% 세부담 상한을 함께 적용한다.
+        function calculateAnnualPropertyTax(scen, isJointOwnership) {
+            const totalPublishedPrice = 2500000000;
+            const ownerCount = isJointOwnership ? 2 : 1;
+            const publishedPricePerOwner = totalPublishedPrice / ownerCount;
+            const isResident = scen.isRes;
+            const originalDeduction = isResident
+                ? (isJointOwnership ? 900000000 : 1400000000)
+                : (isJointOwnership ? 400000000 : 900000000);
+            const revisedDeduction = isResident
+                ? originalDeduction
+                : (isJointOwnership ? 600000000 : 1200000000);
+            const originalReferenceTaxBase = Math.max(0, totalPublishedPrice - (isResident ? 1800000000 : 800000000));
+            const originalTaxBase = Math.max(0, publishedPricePerOwner - originalDeduction) * ownerCount;
+            const revisedTaxBase = Math.max(0, publishedPricePerOwner - revisedDeduction) * ownerCount;
+            const annualReferenceTax = scen.propTaxAnnual;
+            const unlimitedTax = originalReferenceTaxBase > 0
+                ? annualReferenceTax * (originalTaxBase / originalReferenceTaxBase) * (revisedTaxBase / Math.max(1, originalTaxBase))
+                : 0;
+
+            // 기존 참조 시나리오의 전년 세액을 기준으로 수정안의 150% 상한을 적용한다.
+            const previousYearTax = scen.previousYearTax;
+            return Math.min(unlimitedTax, previousYearTax * 1.5);
+        }
+
         // Full Simulation Logic Engine
         function runSimulationEngine() {
             const salePrice = parseFloat(document.getElementById('inputSalePrice').value) * 100000000; // KRW
@@ -528,11 +556,11 @@
             // 5: 2029 Res (10 yrs)
 
             const scenarios = [
-                { id: 1, name: '시나리오 1', year: 2027, resYrs: 9, isRes: false, ownRate: 0.40, resRate: 0.36, cap: 2000000000, loanYrs: 0, propTaxAnnual: 19300000 },
-                { id: 2, name: '시나리오 2', year: 2028, resYrs: 9, isRes: false, ownRate: 0.20, resRate: 0.54, cap: 2000000000, loanYrs: 0, propTaxAnnual: 23500000 },
-                { id: 3, name: '시나리오 3', year: 2029, resYrs: 9, isRes: false, ownRate: 0.00, resRate: 0.72, cap: 1000000000, loanYrs: 0, propTaxAnnual: 23500000 },
-                { id: 4, name: '시나리오 4', year: 2028, resYrs: 10, isRes: true, ownRate: 0.20, resRate: 0.60, cap: 2000000000, loanYrs: 1, propTaxAnnual: 11020000 },
-                { id: 5, name: '시나리오 5', year: 2029, resYrs: 10, isRes: true, ownRate: 0.00, resRate: 0.80, cap: 1000000000, loanYrs: 2, propTaxAnnual: 11020000 }
+                { id: 1, name: '시나리오 1', year: 2027, resYrs: 9, isRes: false, ownRate: 0.40, resRate: 0.36, cap: 2000000000, loanYrs: 0, propTaxAnnual: 19300000, previousYearTax: 19300000 },
+                { id: 2, name: '시나리오 2', year: 2028, resYrs: 9, isRes: false, ownRate: 0.20, resRate: 0.54, cap: 2000000000, loanYrs: 0, propTaxAnnual: 23500000, previousYearTax: 19300000 },
+                { id: 3, name: '시나리오 3', year: 2029, resYrs: 9, isRes: false, ownRate: 0.00, resRate: 0.72, cap: 1000000000, loanYrs: 0, propTaxAnnual: 23500000, previousYearTax: 23500000 },
+                { id: 4, name: '시나리오 4', year: 2028, resYrs: 10, isRes: true, ownRate: 0.20, resRate: 0.60, cap: 2000000000, loanYrs: 1, propTaxAnnual: 11020000, previousYearTax: 8500000 },
+                { id: 5, name: '시나리오 5', year: 2029, resYrs: 10, isRes: true, ownRate: 0.00, resRate: 0.80, cap: 1000000000, loanYrs: 2, propTaxAnnual: 11020000, previousYearTax: 11020000 }
             ];
 
             const results = scenarios.map(scen => {
@@ -547,19 +575,16 @@
                 const perOwnerCapitalTax = calculateIncomeTax(perOwnerTaxableIncome);
                 const totalCapitalTax = perOwnerCapitalTax * ownerCount;
 
-                // Cumulative Real Estate Tax Calculation
-                let cumulativePropTax = 0;
-                if (scen.id === 1) {
-                    cumulativePropTax = 19300000;
-                } else if (scen.id === 2) {
-                    cumulativePropTax = 19300000 + 23500000;
-                } else if (scen.id === 3) {
-                    cumulativePropTax = 19300000 + 23500000 + 23500000;
-                } else if (scen.id === 4) {
-                    cumulativePropTax = 8500000 + 11020000;
-                } else if (scen.id === 5) {
-                    cumulativePropTax = 8500000 + 11020000 + 11020000;
-                }
+                // 누적 종부세: 해당 시나리오와 동일한 거주 상태의 연도별 수정안 세액을 합산
+                const propertyTaxTimeline = scen.isRes
+                    ? [
+                        { year: 2027, isRes: true, propTaxAnnual: 8500000, previousYearTax: 8500000 },
+                        ...scenarios.filter(item => item.isRes && item.year <= scen.year)
+                    ]
+                    : scenarios.filter(item => !item.isRes && item.year <= scen.year);
+                const annualPropertyTaxes = propertyTaxTimeline
+                    .map(item => calculateAnnualPropertyTax(item, isJointOwnership));
+                const cumulativePropTax = annualPropertyTaxes.reduce((sum, annualTax) => sum + annualTax, 0);
 
                 // Cumulative Loan Interest
                 const totalInterest = loanAmount * interestRate * scen.loanYrs;
@@ -598,7 +623,7 @@
             document.getElementById('valOwnership').innerText = ownershipLabel;
             document.getElementById('headerOwnershipLabel').innerText = ownershipLabel;
             document.getElementById('acqPriceLabel').innerText = '취득가액 (' + (isJointOwnership ? '공동명의' : '단독명의') + ')';
-            document.getElementById('matrixOwnershipNote').innerText = '* ' + ownershipLabel + ', 지방소득세(10%) 및 재산세 공제 포함 · 종부세는 명의별 재산정 미반영';
+            document.getElementById('matrixOwnershipNote').innerText = '* ' + ownershipLabel + ', 지방소득세(10%) 및 재산세 공제 포함 · 종부세는 수정안 공제·150% 세부담 상한 반영 추정치';
 
             if (isJointOwnership) {
                 document.getElementById('ownershipInsightHeading').innerText = '부부 공동명의(50:50)가 선사하는 2가지 결정적 절세 이점';
@@ -611,7 +636,7 @@
                 document.getElementById('ownershipInsightOneTitle').innerText = '1. 공제 한도와 기본공제는 1인에게 1회 적용';
                 document.getElementById('ownershipInsightOneBody').innerHTML = "전체 과세대상 양도차익에 장기거주공제 한도와 <strong>기본공제 250만 원</strong>을 한 번만 적용합니다.";
                 document.getElementById('ownershipInsightTwoTitle').innerText = '2. 전체 과세표준에 누진세율 적용';
-                document.getElementById('ownershipInsightTwoBody').innerHTML = "과세표준을 분산하지 않으므로 높은 누진세율 구간이 적용될 수 있습니다. 이 시뮬레이터의 종부세 수치는 명의별 재산정 전의 시나리오 참조값입니다.";
+                document.getElementById('ownershipInsightTwoBody').innerHTML = "과세표준을 분산하지 않으므로 높은 누진세율 구간이 적용될 수 있습니다. 종부세는 단독명의 비거주 기본공제 <strong>12억 원</strong>과 세부담 상한 150%를 적용해 재산정합니다.";
             }
 
             const results = runSimulationEngine();
